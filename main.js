@@ -1,39 +1,41 @@
-const slidesContainer = document.querySelector(".slider");
+const SlidesContainer = document.querySelector(".slider");
 let cards = document.querySelectorAll(".slider__card");
-const prevButton = document.querySelector(".btn__prev");
-const nextButton = document.querySelector(".btn__next");
-const firstItem = cards[0];
-const lastItem = cards[cards.length - 1];
+const PrevButton = document.querySelector(".btn__prev");
+const NextButton = document.querySelector(".btn__next");
+const FirstItem = cards[0];
+const ResetDisplay = cards;
+
 let index = 0;
-
-const resetDisplay = cards;
-
-let slideWidth = slidesContainer.clientWidth + 25;
+let slideWidth = SlidesContainer.clientWidth + 25;
 let intervalValue, intervalValue2, timeoutId;
 
-prevButton.disabled = true;
+PrevButton.disabled = true;
 
 const cleanUpSlides = () => {
   const cardsArray = Array.from(cards);
   cardsArray.splice(3);
-
-  slidesContainer.innerHTML = "";
-  resetDisplay.forEach((card) => {
-    slidesContainer.appendChild(card);
+  SlidesContainer.innerHTML = "";
+  ResetDisplay.forEach((card) => {
+    SlidesContainer.appendChild(card);
+    setTimeout(() => {
+      SlidesContainer.scrollLeft -= slideWidth;
+    }, 100);
   });
 };
 
-document.addEventListener("mousemove", () => {
+const detectMouseMove = () => {
   clearTimeout(timeoutId);
   timeoutId = setTimeout(() => {
     cleanUpSlides();
-  }, 10000);
-});
+  }, 6000);
+};
+
+document.addEventListener("mousemove", detectMouseMove);
 
 const mobileQuery = window.matchMedia("(max-width: 900px)");
 const checkMobile = (e) => {
   if (e.matches) {
-    slideWidth = firstItem.clientWidth + 35;
+    slideWidth = FirstItem.clientWidth + 35;
   }
   return e.matches;
 };
@@ -43,39 +45,39 @@ mobileQuery.addEventListener("change", checkMobile);
 const startSlideInterval = () => {
   intervalValue = setInterval(() => {
     checkMobile(mobileQuery);
-    slidesContainer.scrollLeft += slideWidth;
-  }, 4000);
+    SlidesContainer.scrollLeft += slideWidth;
+  }, 3000);
 };
 
 const stopSlideInterval = () => {
   clearInterval(intervalValue);
 };
 
-nextButton.addEventListener("click", () => {
-  slidesContainer.scrollLeft += slideWidth;
-  slidesContainer.append(cards[index % cards.length].cloneNode(true));
-  index++;
+const enablePrevButton = () => {
+  PrevButton.classList.remove("btn__prev--disabled");
+  PrevButton.disabled = false;
+};
+
+const handlePrev = () => {
+  SlidesContainer.scrollLeft -= slideWidth;
   checkMobile(mobileQuery);
   stopSlideInterval();
   startSlideInterval();
-});
+};
 
-prevButton.addEventListener("click", () => {
-  if (index === 0) {
-    index = cards.length - 1;
+const handleNext = (event) => {
+  if (!event.detail || event.detail == 1) {
+    SlidesContainer.scrollLeft += slideWidth;
+    SlidesContainer.append(cards[index % cards.length].cloneNode(true));
+    index++;
   }
-  slidesContainer.scrollLeft -= slideWidth;
-  cards = document.querySelectorAll(".slider__card");
-  slidesContainer.prepend(cards[(cards.length - 1) % index].cloneNode(true));
-  index++;
   checkMobile(mobileQuery);
+  enablePrevButton();
   stopSlideInterval();
   startSlideInterval();
-});
+};
 
-nextButton.addEventListener("click", () => {
-  prevButton.classList.remove("btn__prev--disabled");
-  prevButton.disabled = false;
-});
+NextButton.addEventListener("click", (e) => handleNext(e));
+PrevButton.addEventListener("click", handlePrev);
 
-startSlideInterval();
+// startSlideInterval();
