@@ -1,4 +1,4 @@
-# nutun_credit
+# vslider
 
 This project uses vite for live reloading.
 
