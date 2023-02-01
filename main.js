@@ -80,4 +80,4 @@ const handleNext = (event) => {
 NextButton.addEventListener("click", (e) => handleNext(e));
 PrevButton.addEventListener("click", handlePrev);
 
-// startSlideInterval();
+startSlideInterval();
